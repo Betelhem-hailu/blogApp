@@ -8,7 +8,7 @@ const { uploadImage } = require("../service/imageUploadService");
 const createPost = async (req, res) => {
     const { title, content, status } = req.body;
     const tagNames = req.body.tags;
-    // const userId = req.user.id;
+    const userId = req.user.userId;
     const coverImage = req.files.coverImage[0].path;
     const galleryImages = req.files.galleryImages.map(file => file.path);
     
@@ -46,6 +46,7 @@ const createPost = async (req, res) => {
         ];
 
         const newPost = new Post({
+            user: userId,
             title,
             content,
             status,
@@ -106,7 +107,7 @@ const createComment = async (req, res) => {
     const postId = req.params.postId;
 
     try {
-        const newComment = new Comment({ message, post: postId });
+        const newComment = new Comment({ message, post: postId, user: req.user.userId });
         await newComment.save();
 
         // Optionally, add the comment ID to the post's comments array
