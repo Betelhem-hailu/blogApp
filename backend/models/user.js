@@ -15,15 +15,15 @@ const UserSchema = new mongoose.Schema({
     },
     title: {
         type: String,
-        required: true,
+        required: false,
     },
     bio: {
         type: String,
-        required: true,
+        required: false,
     },
     profileImage: {
         type: String,
-        required: true,
+        required: false,
     },
     createdAt: {
         type: Date,

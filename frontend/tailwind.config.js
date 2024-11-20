@@ -38,7 +38,8 @@ export default {
       tx_secondary: "#59ACFF",
       tx_tertiary: "#FFFFFF80",
       tx_additional: "#",
-      tx_link: "#",
+      tx_link: "#59ACFF",
+      tx_error: "#D44A47",
 
       //border
       br_primary: "#59ACFF",

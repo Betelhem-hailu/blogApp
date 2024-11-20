@@ -22,9 +22,16 @@ const login = ({email, password}) => {
     });
 }
 
+const logout = async() => {
+    return axios.post(API + '/logout', { withCredentials: true})
+    .then(() => {
+        localStorage.removeItem("userInfo");
+    });
+  };
 
 export const userService =  {
     register,
-    login
+    login,
+    logout
 }
 

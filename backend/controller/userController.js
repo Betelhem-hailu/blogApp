@@ -7,23 +7,23 @@ const jwt = require("jsonwebtoken");
 
 const register = async (req, res) => {
    const {name, email, password, bio, title} = req.body;
-   const profileImage = req.file.path;
+//    const profileImage = req.file.path;
    try{
-    let profileImageUrl = null;
+    // let profileImageUrl = null;
 
-    if (profileImage) {
-        profileImageUrl = await uploadImage(profileImage, "profile_image");
-    }
+    // if (profileImage) {
+    //     profileImageUrl = await uploadImage(profileImage, "profile_image");
+    // }
     
     const userExists = await User.findOne({ email });
 
     if (userExists) {
-        return res.status(400).json({ message: "User already exists" });
+        return res.status(400).json({code:"EMAIL_EXISTS", message: "User already exists" });
     }
 
     const hashedPassword = await hashPassword(password);
 
-    const user = await User.create({name, email, password: hashedPassword, bio, title, profileImage: profileImageUrl});
+    const user = await User.create({name, email, password: hashedPassword, bio, title});
     return res.status(200).json({ message: "User registered successful"})
    }
    catch (err) {
@@ -38,11 +38,11 @@ const login = async (req, res) => {
             email,
         });
         if (!user) {
-            return res.status(400).json({ message: "User not found" });
+            return res.status(400).json({code:"USER_NOT_FOUND", message: "User not found" });
             }
         const isValidPassword = bcrypt.compareSync(password, user.password);
         if (!isValidPassword) {
-            return res.status(400).json({ message: "Invalid password" });
+            return res.status(400).json({code:"INVALID_PASSWORD", message: "Invalid password" });
         }
         const token = jwt.sign(
             { userId: user.id},
@@ -63,7 +63,9 @@ const login = async (req, res) => {
         res.status(200).json({ message: "logged in successfully", data });
     }
     catch (err) {
-        res.status(500).json({ message: err.message });
+        res.status(500).json({ 
+            code: "SERVER_ERROR",
+            message: "Something went wrong. Please try again later." });
     }
 }
 

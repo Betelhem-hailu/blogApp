@@ -2,14 +2,14 @@ import { createAsyncThunk, createSlice } from "@reduxjs/toolkit";
 import { userService } from "../services/user.service"
 
 
-export const register = createAsyncThunk(
+export const userRegister = createAsyncThunk(
     "user/register",
     async(user, {rejectWithValue}) =>{
         try {
             const response = await userService.register(user);
             return response;
         } catch (error) {
-            return rejectWithValue(error.response?.data?.message || error.message);
+            return rejectWithValue(error.response?.data || error);
         }
     }
 )
@@ -21,30 +21,35 @@ export const login = createAsyncThunk(
             const response = await userService.login(user);
             return response;
         } catch (error) {
-            return rejectWithValue(error.response?.data?.message || error.message);
+            return rejectWithValue(error.response?.data || error);
         }
     }
 )
 
+export const logout = createAsyncThunk(
+    "user/logout", 
+    async () => {
+    userService.logout();
+  });
+
 const userSlice = createSlice({
     name: "user",
     initialState: {
-        user: null,
+        user:
+    typeof window !== "undefined" && localStorage.getItem("userInfo")
+      ? JSON.parse(localStorage.getItem("userInfo"))
+      : null,
         error: null,
-        loading: false
-    },
-    reducers: {
-        logout: state => {
-            state.user = null;
-        }
+        loading: false,
+        msg: null,
     },
     extraReducers: (builder) => {
         builder
-          .addCase(register.fulfilled, (state, { payload }) => {
+          .addCase(userRegister.fulfilled, (state, { payload }) => {
             state.isLoggedIn = false;
             state.msg = payload.data;
           })
-          .addCase(register.rejected, (state, { payload }) => {
+          .addCase(userRegister.rejected, (state, { payload }) => {
             state.isLoggedIn = false;
             state.error = payload;
           })
@@ -76,5 +81,5 @@ const userSlice = createSlice({
 })
 
 
-export const { logout } = userSlice.actions;
+export const { reducer } = userSlice.actions;
 export default userSlice.reducer;
