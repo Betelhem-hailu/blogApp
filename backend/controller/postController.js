@@ -2,15 +2,15 @@ const express = require('express');
 const Post = require('../models/post');
 const Tag = require('../models/tag');
 const Comment = require('../models/comment');
-const { uploadImage } = require("../service/imageUploadService");
+const { uploadImage, deleteImage } = require("../service/imageUploadService");
 
 // Create a new post
 const createPost = async (req, res) => {
     const { title, content, status } = req.body;
-    const tagNames = req.body.tags;
+    const tagNames = JSON.parse(req.body.tags);
     const userId = req.user.userId;
     const coverImage = req.files.coverImage[0].path;
-    const galleryImages = req.files.galleryImages.map(file => file.path);
+    const galleryImages = req.files.galleryImages?.map(file => file.path);
     
     try {
         let coverImageUrl = null;
@@ -30,10 +30,10 @@ const createPost = async (req, res) => {
 
         const existingTags = await Tag.find({ name: { $in: tagNames } });
         const existingTagNames = existingTags.map(tag => tag.name);
-        const newTagNames = tagNames.filter(name => !existingTagNames.includes(name));
+        const newTagNames = tagNames?.filter(name => !existingTagNames.includes(name));
 
         const newTags = await Promise.all(
-            newTagNames.map(async (tagName) => {
+            newTagNames?.map(async (tagName) => {
                 const newTag = new Tag({ name: tagName });
                 await newTag.save();
                 return newTag;
@@ -72,10 +72,33 @@ const getPost = async (req, res) => {
     }
 };
 
-// Get a specific post
-const getPostId = async (req, res) => {
+//Get Post by loggedin user
+const getPostByUser = async (req, res) => {
     try {
-        const post = await Post.findById(req.params.id).populate('comments');
+        const userId = req.user.userId;
+        const posts = await Post.find({ user: userId });
+        res.json(posts);
+    }
+    catch (err) {
+        res.status(500).json({ message: err.message });
+    }
+    };
+
+//Get tags
+const getTags = async (req, res) => {
+    try {
+        const tags = await Tag.find();
+        res.status(200).json(tags);
+      } catch (error) {
+        res.status(500).json({ error: error.message });
+      }
+    }
+
+
+// Get a specific post
+const getPostbyId = async (req, res) => {
+    try {
+        const post = await Post.findById(req.params.id).populate('comments') .populate('tags', 'name');
         res.json(post);
     } catch (err) {
         res.status(500).json({ message: err.message });
@@ -83,14 +106,68 @@ const getPostId = async (req, res) => {
 };
 
 // Update a post
-// router.put('/:id', async (req, res) => {
-//     try {
-//         const updatedPost = await Post.findByIdAndUpdate(req.params.id, req.body, { new: true });
-//         res.json(updatedPost);
-//     } catch (err) {
-//         res.status(500).json({ message: err.message });
-//     }
-// });
+const updatePost = async (req, res) => {
+    const { id } = req.params; 
+    const { title, content, status } = req.body;
+    const tagNames = req.body.tags ? JSON.parse(req.body.tags) : [];
+    const coverImage = req.files?.coverImage?.[0]?.path;
+    const galleryImages = req.files?.galleryImages?.map(file => file.path);
+
+    try {
+        const post = await Post.findById(id);
+        if (!post) {
+            return res.status(404).json({ message: "Post not found" });
+        }
+
+        post.title = title || post.title;
+        post.content = content || post.content;
+        post.status = status || post.status;
+
+        if (coverImage) {
+            if (post.coverImage) {
+                await deleteImage(post.coverImage); 
+            }
+            post.coverImage = await uploadImage(coverImage, "cover_image");
+        }
+
+        if (galleryImages) {
+            if (post.galleryImages && post.galleryImages.length > 0) {
+                await Promise.all(post.galleryImages.map(image => deleteImage(image)));
+            }
+        
+            post.galleryImages = await Promise.all(
+                galleryImages.map(image => uploadImage(image, "gallery_images"))
+            );
+        }
+
+     
+        const existingTags = await Tag.find({ name: { $in: tagNames } });
+        const existingTagNames = existingTags.map(tag => tag.name);
+        const newTagNames = tagNames.filter(name => !existingTagNames.includes(name));
+
+        const newTags = await Promise.all(
+            newTagNames.map(async tagName => {
+                const newTag = new Tag({ name: tagName });
+                await newTag.save();
+                return newTag;
+            })
+        );
+
+        const tagIds = [
+            ...existingTags.map(tag => tag._id),
+            ...newTags.map(tag => tag._id),
+        ];
+        post.tags = tagIds;
+
+       
+        await post.save();
+
+        res.status(200).json(post);
+    } catch (err) {
+        res.status(500).json({ message: err.message });
+    }
+};
+
 
 // Delete a post
 const deletePost = async (req, res) => {
@@ -122,7 +199,10 @@ const createComment = async (req, res) => {
 module.exports = {
     createPost,
     getPost,
-    getPostId,
+    getPostByUser,
+    getTags,
+    getPostbyId,
+    updatePost,
     deletePost,
     createComment,
 };

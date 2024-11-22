@@ -22,10 +22,13 @@ const imageFileFilter = (req, file, cb) => {
   }
 };
 
+
 const uploadImages = multer({
   storage: imageStorage,
-  fileFilter: imageFileFilter,
-});
+}).fields([
+  { name: 'coverImage', maxCount: 1 },
+  { name: 'galleryImages', maxCount: 10 }, 
+]);
 
 
 module.exports = uploadImages

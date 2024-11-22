@@ -9,3 +9,26 @@ body, html {
   height: 100%;
   overflow-x: hidden;
 }
+
+.custom-height {
+  height: 270px;
+}
+
+.custom-scrollbar::-webkit-scrollbar {
+  width: 5px; /* Width of the scrollbar */
+}
+
+.custom-scrollbar::-webkit-scrollbar-thumb {
+  background-color: #59ACFF; /* Scrollbar color */
+  border-radius: 100px; /* Rounded corners */
+}
+
+.custom-scrollbar::-webkit-scrollbar-thumb:hover {
+  background-color: #2980b9; /* Color on hover */
+}
+
+.custom-scrollbar::-webkit-scrollbar-track {
+  background-color: #00000066; /* Background track color */
+  border-radius: 100px;
+  border-left: #59ACFF solid 0.5px;
+}

@@ -18,4 +18,16 @@ const uploadImage = async (file, folder) => {
   }
 };
 
-module.exports = { uploadImage };
+const deleteImage = async (file, folder) => {
+  try {
+    const result = await cloudinary.uploader.destroy(file, {
+      folder: folder
+    });
+    return result.secure_url; 
+  } catch (error) {
+    console.error('Cloudinary error:', error);
+    throw new Error('Image upload failed');
+  }
+};
+
+module.exports = { uploadImage, deleteImage };

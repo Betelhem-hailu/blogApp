@@ -1,6 +1,7 @@
 import { useState } from 'react';
 import { logo } from '../assets';
 import { IoCamera } from "react-icons/io5";
+import { Link } from 'react-router-dom';
 
 function Profile() {
     const [name, setName] = useState('');
@@ -20,7 +21,7 @@ function Profile() {
         <header className="bg-five-color-gradient text-tx_primary h-[70px] shadow-header_shadow">
         <div className="flex justify-between items-center px-[90px] py-[10px]">
           <div className="flex gap-[15px] items-center">
-            <img src={logo} alt="blog_app_logo" className="w-[50px] h-[50px] object-fit rounded-full" />
+          <Link to={"/"}><img src={logo} alt="blog_app_logo" className="w-[50px] h-[50px] object-fit rounded-full" /></Link>
             <h1 className="text-2xl font-semibold">Profile</h1>
           </div>
         </div>
