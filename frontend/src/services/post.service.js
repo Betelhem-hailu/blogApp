@@ -16,7 +16,10 @@ const createPost = async(formData) => {
       if (error.response && error.response.status === 409) {
         // Handle conflict
         throw new Error(error);
-      } else {
+      } 
+      else if (error.response && error.response.status === 400) {
+        throw new Error(error.response.data.errors);
+    }else {
         // Handle other errors
         throw new Error(error || 'An unexpected error occurred'); 
       }

@@ -59,8 +59,14 @@ const PostList = () => {
 export default PostList
 
 const PostCard = ({ id, title, content, coverImage, galleryImages, date }) => {
-  const navigate = useNavigate();
+  const maxLength = 120; 
+  
+  const truncatedContent =
+    content?.length > maxLength
+      ? `${content?.slice(0, maxLength)}...`
+      : content;
 
+  const navigate = useNavigate();
   const handleEdit = () => {
     navigate("/createpost", { state: { postId: id } });
   };
@@ -74,7 +80,7 @@ const PostCard = ({ id, title, content, coverImage, galleryImages, date }) => {
         color: "white", }}
         >{title}</h2>
         <div className="p-4">
-          <p className="text-gray-400 mb-4 text-tx_primary">{content}</p>
+          <p className="text-gray-400 mb-4 text-tx_primary">{truncatedContent}</p>
           <div className="grid grid-rows-1 grid-flow-col gap-4 w-[150px]">
             {galleryImages?.map((image, index) => (
               <img src={image} key={index} alt="blog_app_logo" className="w-[50px] h-[50px] object-fit" />

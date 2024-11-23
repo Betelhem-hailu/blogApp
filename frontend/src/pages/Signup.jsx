@@ -6,7 +6,7 @@ import { userRegister } from "../slices/user.slice";
 import { Link, useNavigate } from 'react-router-dom';
 
 const validationSchema = z.object({
-  name: z.string().min(3, {message: 'Name is should be at least 3 characters'}),
+  name: z.string().min(5, {message: 'Name is should be at least 5 characters'}),
   email: z.string().email('Invalid email address').min(1,{message: 'Email is required'}),
   password: z
   .string()

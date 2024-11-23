@@ -9,6 +9,9 @@ const register = user => {
     }).catch(error => {
         if (error.response && error.response.status === 409) {
             throw new Error(error);
+        }
+        else if (error.response && error.response.status === 400) {
+            throw new Error(error.response.data.errors);
         } else {
             throw new Error(error || 'An unexpected error occurred');
         }

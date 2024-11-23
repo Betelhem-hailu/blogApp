@@ -56,7 +56,7 @@ const createPost = async (req, res) => {
         });
 
         await newPost.save();
-        res.status(201).json(newPost);
+        res.status(201).json({message: "Post created successfully"});
     } catch (err) {
         res.status(500).json({ message: err.message });
     }
@@ -66,7 +66,12 @@ const createPost = async (req, res) => {
 const getPost = async (req, res) => {
     try {
         const posts = await Post.find();
+        if (!posts) {
+            return res.status(404).json({ code: "NO_POST", message: "No posts found" });
+        }
+        else {
         res.json(posts);
+        }
     } catch (err) {
         res.status(500).json({ message: err.message });
     }
@@ -77,7 +82,12 @@ const getPostByUser = async (req, res) => {
     try {
         const userId = req.user.userId;
         const posts = await Post.find({ user: userId });
-        res.json(posts);
+        if (!posts) {
+            return res.status(404).json({ code: "NO_POST", message: "No posts found" });
+        }
+        else {
+            res.json(posts);
+            }
     }
     catch (err) {
         res.status(500).json({ message: err.message });
@@ -99,7 +109,11 @@ const getTags = async (req, res) => {
 const getPostbyId = async (req, res) => {
     try {
         const post = await Post.findById(req.params.id).populate('comments') .populate('tags', 'name');
-        res.json(post);
+        if (!post) {
+            return res.status(404).json({ code: "NO_POST", message: "No posts found" });
+        }
+        else {
+        res.json(post); }
     } catch (err) {
         res.status(500).json({ message: err.message });
     }
@@ -116,7 +130,7 @@ const updatePost = async (req, res) => {
     try {
         const post = await Post.findById(id);
         if (!post) {
-            return res.status(404).json({ message: "Post not found" });
+            return res.status(404).json({code: "POST_NOT_FOUND", message: "Post not found" });
         }
 
         post.title = title || post.title;

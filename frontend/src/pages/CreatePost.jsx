@@ -7,32 +7,15 @@ import { z } from "zod";
 import { Controller, useForm } from "react-hook-form";
 import { createPost, getPostsbyId, getTags, updatePost } from "../slices/post.slice";
 
-// const validationSchema = z.object({
-//   title: z.string().min(1, { message: "Title is required" }),
-//   content: z
-//     .string()
-//     .min(1, { message: "Content must be greater than 250 words" }),
-//   coverImage: z.any().refine((file) => file instanceof File && file.size > 0, {
-//     message: "Cover image is required",
-//   }),
-//   gallery: z.array(z.any()).refine((files) => files && files.length > 0, {
-//     message: "At least one gallery image is required",
-//   }),
-// });
 const getValidationSchema = (isUpdate = false) => {
   return z.object({
-    title: z.string().min(1, { message: "Title is required" }),
-    content: z.string().min(1, { message: "Content must be greater than 250 words" }),
+    title: z.string().min(10, { message: "Title is required" }),
+    content: z.string().min(250, { message: "Content must be greater than 250 words" }),
     coverImage: isUpdate
       ? z.any().optional()
       : z.any().refine((file) => file instanceof File && file.size > 0, {
           message: "Cover image is required",
-        }),
-    gallery: isUpdate
-      ? z.array(z.any()).optional()
-      : z.array(z.any()).refine((files) => files && files.length > 0, {
-          message: "At least one gallery image is required",
-        }),
+        })
   });
 };
 
@@ -53,7 +36,6 @@ function CreatePost() {
     mode: "onSubmit",
   });
 
-  // const validationSchema = getValidationSchema(isUpdate);
 
   const dispatch = useDispatch();
   const navigate = useNavigate();

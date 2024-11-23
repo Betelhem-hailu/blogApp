@@ -6,7 +6,7 @@ const bcrypt = require('bcryptjs');
 const jwt = require("jsonwebtoken");
 
 const register = async (req, res) => {
-   const {name, email, password, bio, title} = req.body;
+   const {name, email, password} = req.body;
 //    const profileImage = req.file.path;
    try{
     // let profileImageUrl = null;
@@ -23,7 +23,7 @@ const register = async (req, res) => {
 
     const hashedPassword = await hashPassword(password);
 
-    const user = await User.create({name, email, password: hashedPassword, bio, title});
+    const user = await User.create({name, email, password: hashedPassword});
     return res.status(200).json({ message: "User registered successful"})
    }
    catch (err) {

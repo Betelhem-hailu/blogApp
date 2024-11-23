@@ -11,8 +11,22 @@ export const rtkQueryErrorLogger =
   () => (next) => (action) => {
     if (isRejectedWithValue(action)) {
 
+      console.log('action', action);
+
+      // if (action.status.code === 400) {
+      //   toast.error(errorMessages[action.payload], {  // This is an example of how to handle a specific error code and message
+      //     position: 'top-right',
+      //     autoClose: 5000,
+      //     hideProgressBar: true,
+      //     closeOnClick: true,
+      //     pauseOnHover: true,
+      //     draggable: true,
+      //     progress: undefined,
+      //   });
+      // }
+
       const errorMessage =
-        errorMessages[action.payload.code] || action.payload.message || 'An unexpected error occurred.';
+        errorMessages[action.payload.code] || action.payload.message || action.payload || 'An unexpected error occurred.';
 
       toast.error(
         errorMessage,
