@@ -78,10 +78,10 @@ function CreatePost() {
       formData.append("coverImage", values.coverImage); 
     }
 
-    existingGallery.forEach((image) => {
+    existingGallery?.forEach((image) => {
       formData.append("existingGalleryImages", image); 
     });
-    values.gallery.forEach((file) => {
+    values.gallery?.forEach((file) => {
       if (file instanceof File) {
         formData.append("galleryImages", file); 
       }

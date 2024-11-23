@@ -90,10 +90,25 @@ const createPost = async(formData) => {
               });
   }
 
+  //delete post
+  const deletePost = async(postId) => {
+    return axios.delete(API + `/deletePost/${postId}`).then(response => {
+      return response.data;
+      }).catch(error => {
+        if (error.response && error.response.status === 409) {
+          // Handle conflict
+          throw new Error(error);
+          } else
+          // Handle other errors
+          throw new Error(error || 'An unexpected error occurred');
+          });
+  }
+
     export const postService = {
     createPost,
     getTags,
     getPostById,
     getPostsbyUser,
-    updatePost
+    updatePost,
+    deletePost
   };

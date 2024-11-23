@@ -69,6 +69,20 @@ export const getPostsbyId = createAsyncThunk(
       }
     );
 
+    //deletePost
+    export const deletePost = createAsyncThunk(
+      "post/deletePost",
+      async (id, { rejectWithValue }) => {
+        try {
+          const response = await postService.deletePost(id);
+          return response
+          } catch (error) {
+            return rejectWithValue(error.response?.data?.message || error.message
+              );
+              }
+              }
+    )
+
 const initialState = {
   data: null,
   post: null,
@@ -144,6 +158,19 @@ const postSlice = createSlice({
           state.msg = action.payload; 
         })
         .addCase(updatePost.rejected, (state, payload) => {
+          state.loading = false;
+          state.error = payload;
+        })
+        .addCase(deletePost.pending, (state) => {
+          state.loading = true;
+          state.error = null; 
+        })
+        .addCase(deletePost.fulfilled, (state, action) => {
+          state.loading = false;
+          console.log(action.payload);
+          state.data = state.data.filter(post => post._id !== action.payload)
+        })
+        .addCase(deletePost.rejected, (state, payload) => {
           state.loading = false;
           state.error = payload;
         });
