@@ -58,19 +58,23 @@ const createPost = async(formData) => {
         }
 
   //getposts
-  const getPosts = async() => {
-    return axios.get(API + "/getPost").then(response => {
-      return response.data;
-    }).catch(error => {
-      if (error.response && error.response.status === 409) {
-        // Handle conflict
-        throw new Error(error);
-        } else
-        // Handle other errors
-        throw new Error(error || 'An unexpected error occurred');
+  const getPosts = async(search) => {
+      return axios.get(API + "/getPost", {
+        params: {
+          search: search || '',
         }
-        );
+      }).then(response => {
+        return response.data;
+      }).catch(error => {
+        if (error.response && error.response.status === 409) {
+          // Handle conflict
+          throw new Error(error);
+        } else {
+          // Handle other errors
+          throw new Error(error || 'An unexpected error occurred');
         }
+      });
+    }
 
   //get postsbyId
   const getPostById = async(id) => {

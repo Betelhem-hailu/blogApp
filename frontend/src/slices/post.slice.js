@@ -32,9 +32,9 @@ export const getTags = createAsyncThunk(
 //getPosts
 export const getPosts = createAsyncThunk(
   "post/getPosts",
-  async (_, { rejectWithValue }) => {
+  async (search, { rejectWithValue }) => {
     try {
-      const response = await postService.getPosts();
+      const response = await postService.getPosts(search);
       return response;
     } catch (error) {
       return rejectWithValue(error.response?.data?.message || error.message);

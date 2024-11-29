@@ -1,20 +1,23 @@
 import { RiSearchLine } from "react-icons/ri";
-import { logo } from "../assets";
 import { Footer, Nav } from "../components";
 import { BiLike } from "react-icons/bi";
 import { BlogPostCard } from "../components/posts";
 import { useDispatch, useSelector } from "react-redux";
-import { useEffect } from "react";
+import { useEffect, useState } from "react";
 import { getPosts } from "../slices/post.slice";
 import moment from "moment";
 import { Link } from "react-router-dom";
 
 const Blog = () => {
   const dispatch = useDispatch();
+  const [search, setSearch] = useState('');
+
   const { data } = useSelector((state) => state.post);
   useEffect(() => {
-    dispatch(getPosts());
-  }, [dispatch]);
+    dispatch(getPosts(search));
+  }, [search, dispatch]);
+
+  console.log('data', data);
   return (
     <div className="bg-bg_primary min-h-[100vh] h-full">
       <Nav />
@@ -23,6 +26,8 @@ const Blog = () => {
           <div className="flex space-x-4 items-center flex-wrap">
             <div className="relative">
               <input
+                value={search}
+                onChange={(e) => setSearch(e.target.value)}
                 type="text"
                 placeholder="Search..."
                 className="pl-[80px] px-4 py-[5px] bg-[#00000066] border border-[0.5px] border-br_primary rounded-[100px] bg-gray-700 text-white w-[500px] h-[50px] focus:outline-none focus:ring-2 focus:ring-blue-400"

@@ -89,8 +89,15 @@ const createPost = async (req, res) => {
 
 // Get all posts
 const getPost = async (req, res) => {
+    const { search } = req.query;
     try {
-        const posts = await Post.find({ status: "post"}).populate('tags', 'name').populate('user', 'name profilePicture');
+        let posts = [];
+        if(search) {
+        posts= await Post.find({ status: "post", title: { $regex: search, $options: "i" }}).populate('tags', 'name').populate('user', 'name profilePicture');
+        }
+        else {
+        posts = await Post.find({ status: "post"}).populate('tags', 'name').populate('user', 'name profilePicture');
+        }
         if (!posts) {
             return res.status(404).json({ code: "NO_POST", message: "No posts found" });
         }
