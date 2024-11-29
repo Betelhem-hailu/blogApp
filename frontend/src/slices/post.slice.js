@@ -1,5 +1,6 @@
 import { createAsyncThunk, createSlice } from "@reduxjs/toolkit";
 import { postService } from "../services/post.service";
+import { commentService } from "../services/comment.service";
 
 //createPost
 export const createPost = createAsyncThunk(
@@ -24,6 +25,19 @@ export const getTags = createAsyncThunk(
       } catch (error) {
         return rejectWithValue(error.response?.data?.message || error.message
       );
+    }
+  }
+);
+
+//getPosts
+export const getPosts = createAsyncThunk(
+  "post/getPosts",
+  async (_, { rejectWithValue }) => {
+    try {
+      const response = await postService.getPosts();
+      return response;
+    } catch (error) {
+      return rejectWithValue(error.response?.data?.message || error.message);
     }
   }
 );
@@ -82,8 +96,21 @@ export const getPostsbyId = createAsyncThunk(
               }
               }
     )
+    export const createComment = createAsyncThunk(
+      'post/createComment',
+      async (commentData, thunkAPI) => {
+          try {
+              const response = await commentService.createComment(commentData);
+              return response;
+          } catch (error) {
+              console.log(error.response);
+              return thunkAPI.rejectWithValue(error.response?.data || error);
+          }
+      }
+  );
 
 const initialState = {
+  comments: [],
   data: null,
   post: null,
   loading: false,
@@ -97,6 +124,9 @@ const postSlice = createSlice({
     reducers: {
       resetPost: (state) => {
         state.data = [];
+      },
+      setNewComment: (state, action) => {
+        state.comments.push(action.payload); // Append new comment
       },
     },
     extraReducers: (builder) => {
@@ -125,6 +155,18 @@ const postSlice = createSlice({
           state.loading = false;
           state.error = payload;
         })
+        .addCase(getPosts.pending, (state) => {
+          state.loading = true;
+          state.error = null; 
+        })
+        .addCase(getPosts.fulfilled, (state, action) => {
+          state.loading = false;
+          state.data = action.payload; 
+        })
+        .addCase(getPosts.rejected, (state, payload) => {
+          state.loading = false;
+          state.error = payload;
+        })
         .addCase(getPostsbyuserId.pending, (state) => {
           state.loading = true;
           state.error = null; 
@@ -144,6 +186,7 @@ const postSlice = createSlice({
         .addCase(getPostsbyId.fulfilled, (state, action) => {
           state.loading = false;
           state.post = action.payload; 
+          state.comments = action.payload.comments;
         })
         .addCase(getPostsbyId.rejected, (state, payload) => {
           state.loading = false;
@@ -173,9 +216,21 @@ const postSlice = createSlice({
         .addCase(deletePost.rejected, (state, payload) => {
           state.loading = false;
           state.error = payload;
+        })
+        .addCase(createComment.pending, (state) => {
+          state.loading = true;
+          state.error = null; 
+        })
+        .addCase(createComment.fulfilled, (state, action) => {
+          state.loading = false;
+          state.msg = action.payload; 
+        })
+        .addCase(createComment.rejected, (state, action) => {
+          state.loading = false;
+          state.error = action;
         });
     },
   });
   
-  export const { resetPost } = postSlice.actions;
+  export const { resetPost, setNewComment } = postSlice.actions;
   export default postSlice.reducer;

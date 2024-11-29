@@ -2,7 +2,8 @@ import Signup from "./Signup";
 import Login from "./Login";
 import Home from "./Home";
 import Blog from "./Blog";
-import PostList from "./PostLIst";
+import Post from "./Post";
+import PostList from "./PostList";
 import CreatePost from "./CreatePost";
 import Profile from "./Profile";
 
@@ -11,6 +12,7 @@ export {
     Login,
     Home,
     Blog,
+    Post,
     PostList,
     CreatePost,
     Profile

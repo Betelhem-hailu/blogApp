@@ -5,8 +5,8 @@ const Search = () => {
     <section className="container mx-[90px] my-[30px]">
       <div className="flex space-x-4 items-center flex-wrap">
         <div className="relative">
-        <input type="text" placeholder="Search..." className="pl-[80px] px-4 py-[5px] bg-[#00000066] border border-[0.5px] border-br_primary rounded-[100px] bg-gray-700 text-white w-[500px] h-[70px] focus:outline-none focus:ring-2 focus:ring-blue-400" />
-        <RiSearchLine color="#59ACFF" size={50} width={10} className="absolute top-[10%] left-[10px]" />
+        <input type="text" placeholder="Search..." className="pl-[80px] px-4 py-[5px] bg-[#00000066] border border-[0.5px] border-br_primary rounded-[100px] bg-gray-700 text-white w-[500px] h-[50px] focus:outline-none focus:ring-2 focus:ring-blue-400" />
+        <RiSearchLine color="#59ACFF" size={30} width={10} className="absolute top-[20%] left-[10px]" />
         </div>
         <button 
         className="px-4 py-2 w-[100px] text-gray-800 bg-white font-secondary rounded-[15px] focus:outline-none hover:bg-glow transition duration-300 hover:text-tx_primary"

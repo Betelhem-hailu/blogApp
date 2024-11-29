@@ -21,7 +21,7 @@ const authenticate = (req, res, next) => {
       req.user = decoded;
       next();
     } catch (error) {
-      return res.status(403).json({ error: 'Invalid Token' });
+      return res.status(403).json({ code: "UNAUTHORIZED", message: "You must login first" });
     }
   };
 

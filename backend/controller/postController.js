@@ -1,8 +1,12 @@
 const express = require('express');
 const Post = require('../models/post');
+const User = require('../models/user');
+const Notification = require('../models/notification');
 const Tag = require('../models/tag');
 const Comment = require('../models/comment');
 const { uploadImage, deleteImage } = require("../service/imageUploadService");
+
+const userSocketMap = new Map();
 
 // Create a new post
 const createPost = async (req, res) => {
@@ -11,6 +15,7 @@ const createPost = async (req, res) => {
     const userId = req.user.userId;
     const coverImage = req.files.coverImage[0].path;
     const galleryImages = req.files.galleryImages?.map(file => file.path);
+    const io = req.io;
     
     try {
         let coverImageUrl = null;
@@ -56,6 +61,26 @@ const createPost = async (req, res) => {
         });
 
         await newPost.save();
+        const allUsers = await User.find(); // Modify this if you have a subscription-based model
+        const notifications = allUsers.map((user) => ({
+            user: user._id,
+            message: `A new post titled "${newPost.title}" has been published.`,
+            type: "newPost",
+            relatedPost: newPost._id,
+        }));
+        await Notification.insertMany(notifications);
+
+        // Notify readers in real-time
+        allUsers.forEach((user) => {
+            const socketId = userSocketMap.get(user._id.toString());
+            if (socketId) {
+                io.to(socketId).emit("notification", {
+                    message: `A new post titled "${newPost.title}" has been published.`,
+                    postId: newPost._id,
+                });
+            }
+        });
+
         res.status(201).json({message: "Post created successfully"});
     } catch (err) {
         res.status(500).json({ message: err.message });
@@ -65,7 +90,7 @@ const createPost = async (req, res) => {
 // Get all posts
 const getPost = async (req, res) => {
     try {
-        const posts = await Post.find();
+        const posts = await Post.find({ status: "post"}).populate('tags', 'name').populate('user', 'name profilePicture');
         if (!posts) {
             return res.status(404).json({ code: "NO_POST", message: "No posts found" });
         }
@@ -108,7 +133,11 @@ const getTags = async (req, res) => {
 // Get a specific post
 const getPostbyId = async (req, res) => {
     try {
-        const post = await Post.findById(req.params.id).populate('comments') .populate('tags', 'name');
+        const post = await Post.findById(req.params.id).populate({ path: 'comments', select: '_id message createdAt',
+            populate: {
+              path: 'user',
+              select: 'name'
+            }}) .populate('tags', 'name').populate('user', 'name profilePicture');
         if (!post) {
             return res.status(404).json({ code: "NO_POST", message: "No posts found" });
         }
@@ -199,6 +228,7 @@ const deletePost = async (req, res) => {
 const createComment = async (req, res) => {
     const { message } = req.body;
     const postId = req.params.postId;
+    const io = req.io;
 
     try {
         const newComment = new Comment({ message, post: postId, user: req.user.userId });
@@ -207,7 +237,57 @@ const createComment = async (req, res) => {
         // Optionally, add the comment ID to the post's comments array
         await Post.findByIdAndUpdate(postId, { $push: { comments: newComment._id } });
 
-        res.status(201).json(newComment);
+        // Populate the comment with user details
+        const populatedComment = await newComment.populate({
+            path: 'user',
+            select: 'name'
+        });
+        const post = await Post.findById(postId).populate("user", "name");
+
+        // Emit the new comment to the post's room
+        io.to(postId).emit("newComment", populatedComment);
+
+         // Send notification to the post author (if not the commenter)
+         if (post.user._id.toString() !== req.user.userId) {
+            const notification = new Notification({
+                user: post.user._id,
+                message: `${populatedComment.user.name} commented on your post "${post.title}".`,
+                type: "comment",
+                relatedPost: postId,
+            });
+            await notification.save();
+
+            // Notify the author in real time
+            const socketId = userSocketMap.get(post.user._id.toString());
+            if (socketId) {
+                req.io.to(socketId).emit("notification", notification);
+            }
+        }
+            
+        // Send the new comment as the response
+        res.status(201).json(populatedComment);
+    } catch (err) {
+        res.status(500).json({ message: err.message });
+    }
+};
+
+const getNotifications = async (req, res) => {
+    try {
+        const notifications = await Notification.find({ user: req.user.userId, isRead: false })
+            .sort({ createdAt: -1 })
+            .limit(20); 
+        res.status(200).json(notifications);
+    } catch (err) {
+        res.status(500).json({ message: err.message });
+    }
+};
+
+const markNotificationsAsRead = async (req, res) => {
+    try {
+        const { notificationIds } = req.body; 
+        await Notification.updateMany({ _id: { $in: notificationIds } }, { isRead: true });
+
+        res.status(200).json({ message: "Notifications marked as read." });
     } catch (err) {
         res.status(500).json({ message: err.message });
     }
@@ -222,4 +302,6 @@ module.exports = {
     updatePost,
     deletePost,
     createComment,
+    getNotifications,
+    markNotificationsAsRead
 };

@@ -1,3 +1,4 @@
+/* eslint-disable react/prop-types */
 import { logo } from "../assets";
 
 
@@ -14,10 +15,10 @@ const Posts = () => {
 export default Posts;
 
 
-export const BlogPostCard = ({ title, author, date, categories }) => (
+export const BlogPostCard = ({ image, title, author, date, categories }) => (
     <div className="rounded-[20px] p-4 border border-[3px] border-br_secondary">
       <div className="mb-4">
-        <img src={logo} alt="blog_app_logo" className="w-full object-cover w-[400px] h-[180px]" 
+        <img src={image} alt="blog_app_logo" className="w-full object-cover w-[400px] h-[180px]" 
           style={{ borderTopLeftRadius: '10px', borderBottomLeftRadius: '0px', borderTopRightRadius: '10px', borderBottomRightRadius: '0px' }}
       />
       </div>
@@ -27,8 +28,8 @@ export const BlogPostCard = ({ title, author, date, categories }) => (
       <p className="text-gray-400">{date}</p>
       </div>
       <div className="mt-2 flex space-x-2">
-        {categories.map((category, index) => (
-          <span key={index} className="px-3 py-1 bg-white rounded-[10px] text-xs">{category}</span>
+        {categories && categories.map((name, index) => (
+          <span key={index} className="px-3 py-1 bg-white rounded-[10px] text-xs">{name}</span>
         ))}
       </div>
     </div>

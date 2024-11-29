@@ -5,7 +5,8 @@ const errorMessages = {
   'EMAIL_EXISTS': 'Email already exists. Please use a different email.',
   'INVALID_PASSWORD': 'The password is incorrect. Please try again.',
   'USER_NOT_FOUND': 'User does not exist. Please sign up first.',
-  'POST_NOT_FOUND': 'Post does not exist. Either it is deleted or not created.'
+  'POST_NOT_FOUND': 'Post does not exist. Either it is deleted or not created.',
+  'UNAUTHORIZED': 'You must login first',
 };
 
 export const rtkQueryErrorLogger =

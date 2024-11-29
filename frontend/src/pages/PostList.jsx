@@ -33,16 +33,16 @@ const PostList = () => {
               <input
                 type="text"
                 placeholder="Search..."
-                className="pl-[80px] px-4 py-[5px] bg-[#00000066] border border-[0.5px] border-br_primary rounded-[100px] text-white w-[300px] h-[50px] focus:outline-none focus:ring-2 focus:ring-blue-400"
+                className="pl-[80px] px-4 py-[5px] bg-[#00000066] border border-[0.5px] border-br_primary rounded-[100px] text-white w-[300px] h-[40px] focus:outline-none focus:ring-2 focus:ring-blue-400"
               />
               <RiSearchLine
                 color="#59ACFF"
-                size={40}
+                size={30}
                 width={10}
                 className="absolute top-[10%] left-[10px]"
               />
             </div>
-            <select className="p-2 border border-[0.5px] border-br_primary rounded-[15px] bg-[#00000066] text-white w-[100px] h-[50px] focus:outline-none focus:ring-2 focus:ring-blue-400">
+            <select className="p-2 border border-[0.5px] border-br_primary rounded-[15px] bg-[#00000066] text-white w-[100px] h-[40px] focus:outline-none focus:ring-2 focus:ring-blue-400">
               <option
                 value="all"
                 className="border border-[0.5px] border-br_primary rounded-[15px] bg-[#00000066] text-white"

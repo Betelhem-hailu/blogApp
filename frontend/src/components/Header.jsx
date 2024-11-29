@@ -2,7 +2,7 @@ import Nav from "./Nav";
 
 const Header = () => {
     return (
-      <header className="bg-five-color-gradient text-tx_primary h-[350px] rounded-b-[100px] shadow-header_shadow">
+      <header id="home" className="bg-five-color-gradient text-tx_primary h-[350px] rounded-b-[100px] shadow-header_shadow">
         <Nav />
         <div className="ml-[140px] text-tx_primary w-2/4 my-[20px]">
           <h1 className="font-primary text-heading_1 mb-[10px]">MOTTO for the blog up that inspire</h1>
