@@ -1,21 +1,23 @@
 import { RiSearchLine } from "react-icons/ri";
 import { Footer, Nav } from "../components";
-import { BiLike } from "react-icons/bi";
 import { BlogPostCard } from "../components/posts";
 import { useDispatch, useSelector } from "react-redux";
 import { useEffect, useState } from "react";
-import { getPosts } from "../slices/post.slice";
+import { getPosts, getTags } from "../slices/post.slice";
 import moment from "moment";
 import { Link } from "react-router-dom";
 
 const Blog = () => {
   const dispatch = useDispatch();
   const [search, setSearch] = useState('');
+  const [tag, setTag] = useState("");
 
   const { data } = useSelector((state) => state.post);
+  const {tags} = useSelector((state) => state.post);
   useEffect(() => {
-    dispatch(getPosts(search));
-  }, [search, dispatch]);
+    dispatch(getTags());
+    dispatch(getPosts({search, tag}));
+  }, [tag, search, dispatch]);
 
   console.log('data', data);
   return (
@@ -39,19 +41,12 @@ const Blog = () => {
                 className="absolute top-[20%] left-[10px]"
               />
             </div>
-            <button className="px-4 py-2 w-[100px] text-gray-800 bg-white font-secondary rounded-[15px] focus:outline-none hover:bg-glow transition duration-300 hover:text-tx_primary">
+            <button onClick={()=>setTag("")} className="px-4 py-2 w-[100px] text-gray-800 bg-white font-secondary rounded-[15px] focus:outline-none hover:bg-glow transition duration-300 hover:text-tx_primary">
               ALL
             </button>
-
-            <button className="px-4 py-2 bg-gray-700 text-white rounded border border-br_primary rounded-[15px] hover:bg-glow transition duration-300 focus:outline-none focus:ring-2 focus:ring-blue-400">
-              Category 1
-            </button>
-            <button className="px-4 py-2 bg-gray-700 text-white rounded border border-br_primary rounded-[15px] hover:bg-glow transition duration-300 focus:outline-none focus:ring-2 focus:ring-blue-400">
-              Category 2
-            </button>
-            <button className="px-4 py-2 bg-gray-700 text-white rounded border border-br_primary rounded-[15px] hover:bg-glow transition duration-300 focus:outline-none focus:ring-2 focus:ring-blue-400">
-              Category 3
-            </button>
+            {tags && tags.map((tag, index) => (
+        <button key={index} onClick={()=>setTag(tag.name)} className="px-4 py-2 bg-gray-700 text-white rounded border border-br_primary rounded-[15px] hover:bg-glow transition duration-300 focus:outline-none focus:ring-2 focus:ring-blue-400">{tag.name}</button>
+        ))}
           </div>
         </section>
         <section className="container mx-auto grid grid-cols-1 md:grid-cols-3 gap-4 px-[90px] py-[40px]">

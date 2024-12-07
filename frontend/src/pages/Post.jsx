@@ -1,16 +1,16 @@
 import { useLocation } from "react-router-dom";
 import { logo } from "../assets";
 import { Footer, Nav } from "../components";
-import { BiLike } from "react-icons/bi";
+import { AiFillLike } from "react-icons/ai";
 import { useDispatch, useSelector } from "react-redux";
 import { useEffect, useState } from "react";
-import { createComment, getPostsbyId, setNewComment } from "../slices/post.slice";
+import { createComment, getPostsbyId, setLike, setNewComment, toggleLike, unSetLike } from "../slices/post.slice";
 import moment from "moment";
 import {socket} from "../utils/socket";
 
 const Post = () => {
   const dispatch = useDispatch();
-  const { post, comments } = useSelector((state) => state.post);
+  const { post, comments, like, likeCount } = useSelector((state) => state.post);
   const location = useLocation();
   const postId = location.state?.postId;
   
@@ -31,7 +31,7 @@ const Post = () => {
     return () => {
       socket.off("newComment"); // Clean up the listener
     };
-  }, [dispatch, postId]);
+  }, [dispatch, postId, like]);
 
   const handleSubmit = (e) => {
     e.preventDefault();
@@ -42,6 +42,22 @@ const Post = () => {
         });
         socket.emit("newComment", comment);
     }
+
+    const handleToggleLike = () => {
+     if (like) {
+        dispatch(unSetLike());
+        
+      } else {
+        dispatch(setLike());
+        }
+
+        dispatch(toggleLike(postId))
+        .unwrap()
+        .then(() => {
+        });
+        console.log("like");
+    }
+
 
     if(post){
         console.log(post);
@@ -66,7 +82,7 @@ const Post = () => {
       </div>
 
       <div className="md:flex mx-[80px] my-[40px]">
-        <div className="mx-[20px]">
+        <div className="md:flex-1 mx-[20px]">
           <div className="flex justify-between w-full items-center">
             <div className="flex gap-[10px] items-center">
               {post?.user?.profilePicture ? (
@@ -85,8 +101,8 @@ const Post = () => {
               </h2>
             </div>
             <div className="flex gap-[5px] items-center">
-              <h2 className="font-secondary text-tx_primary">324</h2>
-              <BiLike color="white" size={25} />
+              <h2 className="font-secondary text-tx_primary">{likeCount}</h2>
+              <AiFillLike color={like  ? "red" : "white"} size={25} onClick={handleToggleLike} />
             </div>
           </div>
           {/* comments */}

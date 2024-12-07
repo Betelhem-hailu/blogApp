@@ -1,13 +1,23 @@
 /* eslint-disable react/prop-types */
-import { logo } from "../assets";
+import { Link } from "react-router-dom";
+import moment from "moment";
 
 
-const Posts = () => {
+const Posts = ({data}) => {
   return (
     <section className="container mx-auto grid grid-cols-1 md:grid-cols-3 gap-4 px-[90px] py-[40px]">
-      <BlogPostCard title="Title 1" author="Author 1" date="Date 1" categories={['Cat 1', 'Cat 2']} />
-      <BlogPostCard title="Title 2" author="Author 2" date="Date 2" categories={['Cat 1', 'Cat 3']} />
-      <BlogPostCard title="Title 3" author="Author 3" date="Date 3" categories={['category 2', 'Cat 3']} />
+      {data &&
+            data.map((post, index) => (
+              <Link key={index} to={`/post`} state={{ postId: post._id }}>
+                <BlogPostCard  
+                  image={post.coverImage}
+                  title={post.title}
+                  author={post.user.name}
+                  date={moment(post.createdAt).format("DD/MM/YY")}
+                  categories={post.tags.map((tag) => tag.name)}
+                />
+              </Link>
+            ))}
     </section>
   );
 };

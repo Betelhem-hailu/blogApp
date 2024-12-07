@@ -32,9 +32,22 @@ export const getTags = createAsyncThunk(
 //getPosts
 export const getPosts = createAsyncThunk(
   "post/getPosts",
-  async (search, { rejectWithValue }) => {
+  async ({search, tag}, { rejectWithValue }) => {
     try {
-      const response = await postService.getPosts(search);
+      const response = await postService.getPosts({search, tag});
+      return response;
+    } catch (error) {
+      return rejectWithValue(error.response?.data?.message || error.message);
+    }
+  }
+);
+
+//getPopularPosts
+export const getPopularPosts = createAsyncThunk(
+  "post/getPopularPosts",
+  async ( {search, tag}, { rejectWithValue }) => {
+    try {
+      const response = await postService.getPopularPosts({search, tag});
       return response;
     } catch (error) {
       return rejectWithValue(error.response?.data?.message || error.message);
@@ -67,6 +80,20 @@ export const getPostsbyId = createAsyncThunk(
           );
         }
       }
+    );
+
+  //toggleLike
+  export const toggleLike = createAsyncThunk(
+    "post/toggleLike",
+    async (postId, { rejectWithValue }) => {
+      try {
+        const response = await postService.toggleLike(postId);
+        return response;
+        } catch (error) {
+          return rejectWithValue(error.response?.data?.message || error.message
+          );
+          }
+          }
     );
 
   //updatePost
@@ -111,8 +138,11 @@ export const getPostsbyId = createAsyncThunk(
 
 const initialState = {
   comments: [],
+  like: false,
+  likeCount: 0,
   data: null,
   post: null,
+  tags: null,
   loading: false,
   error: null,
   msg: null,
@@ -126,8 +156,16 @@ const postSlice = createSlice({
         state.data = [];
       },
       setNewComment: (state, action) => {
-        state.comments.push(action.payload); // Append new comment
+        state.comments.push(action.payload);
       },
+      setLike: (state) => {
+        state.like = true;
+        state.likeCount = state.likeCount + 1;
+      },
+      unSetLike: (state) => {
+        state.like = false;
+        state.likeCount = state.likeCount - 1;
+      }
     },
     extraReducers: (builder) => {
       builder
@@ -149,7 +187,7 @@ const postSlice = createSlice({
         })
         .addCase(getTags.fulfilled, (state, action) => {
           state.loading = false;
-          state.data = action.payload; 
+          state.tags = action.payload; 
         })
         .addCase(getTags.rejected, (state, payload) => {
           state.loading = false;
@@ -164,6 +202,18 @@ const postSlice = createSlice({
           state.data = action.payload; 
         })
         .addCase(getPosts.rejected, (state, payload) => {
+          state.loading = false;
+          state.error = payload;
+        })
+        .addCase(getPopularPosts.pending, (state) => {
+          state.loading = true;
+          state.error = null; 
+        })
+        .addCase(getPopularPosts.fulfilled, (state, action) => {
+          state.loading = false;
+          state.data = action.payload; 
+        })
+        .addCase(getPopularPosts.rejected, (state, payload) => {
           state.loading = false;
           state.error = payload;
         })
@@ -187,6 +237,8 @@ const postSlice = createSlice({
           state.loading = false;
           state.post = action.payload; 
           state.comments = action.payload.comments;
+          state.like = action.payload.userLike;
+          state.likeCount = action.payload.likeCount;
         })
         .addCase(getPostsbyId.rejected, (state, payload) => {
           state.loading = false;
@@ -228,9 +280,21 @@ const postSlice = createSlice({
         .addCase(createComment.rejected, (state, action) => {
           state.loading = false;
           state.error = action;
+        })
+        .addCase(toggleLike.pending, (state) => {
+          state.loading = true;
+          state.error = null; 
+        })
+        .addCase(toggleLike.fulfilled, (state, action) => {
+          state.loading = false;
+          state.msg = action.payload; 
+        })
+        .addCase(toggleLike.rejected, (state, action) => {
+          state.loading = false;
+          state.error = action;
         });
     },
   });
   
-  export const { resetPost, setNewComment } = postSlice.actions;
+  export const { resetPost, setNewComment, setLike, unSetLike } = postSlice.actions;
   export default postSlice.reducer;
