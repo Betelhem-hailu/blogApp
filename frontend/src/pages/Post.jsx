@@ -66,9 +66,9 @@ const Post = () => {
   return (
     <div className="bg-bg_primary min-h-[100vh] h-full">
       <Nav />
-      <div className="bg-bg_secondary min-h-[700px] mx-[80px] my-[40px] p-8 rounded-[20px] text-tx_primary">
+      <div className="bg-bg_secondary min-h-[700px] mx-[20px] md:mx-[80px] my-[40px] p-8 rounded-[20px] text-tx_primary">
         <h1
-          className="text-center font-secondary text-heading_1 font-bold py-10 mb-2 text-tx_primary w-full h-[100px] px-4 rounded-t-[20px]"
+          className="text-center font-secondary text-heading_1 font-bold py-4 md:py-10 mb-2 text-tx_primary w-full h-full md:h-[100px] px-2 md:px-4 rounded-t-[20px]"
           style={{
             backgroundImage: `linear-gradient(rgba(0, 0, 0, 0.2), rgba(0, 0, 0, 0.7)), url(${post?.coverImage})`,
             backgroundSize: "cover",
@@ -81,7 +81,7 @@ const Post = () => {
         <p className="font-secondary text-[20px]">{post?.content}</p>
       </div>
 
-      <div className="md:flex mx-[80px] my-[40px]">
+      <div className="md:flex px-[20px] md:px-[80px] my-[40px]">
         <div className="md:flex-1 mx-[20px]">
           <div className="flex justify-between w-full items-center">
             <div className="flex gap-[10px] items-center">
@@ -89,10 +89,10 @@ const Post = () => {
                 <img
                   src={logo}
                   alt="blog_app_logo"
-                  className="w-[50px] h-[50px] object-fit rounded-full"
+                  className="w-[30px] h-[30px] md:w-[50px] md:h-[50px] object-fit rounded-full"
                 />
               ) : (
-                <div className="cursor-pointer h-[50px] w-[50px] capitalize text-tx_primary text-heading_2 flex justify-center items-center rounded-full bg-bg_primary border border-br_primary focus:outline-none focus:ring-2 focus:ring-blue-400">
+                <div className="w-[30px] h-[30px] md:w-[50px] md:h-[50px] capitalize text-tx_primary text-base md:text-heading_2 flex justify-center items-center rounded-full bg-bg_primary border border-br_primary focus:outline-none focus:ring-2 focus:ring-blue-400">
                   {post?.user?.name.substring(0, 1)}
                 </div>
               )}
@@ -100,7 +100,7 @@ const Post = () => {
                 {post?.user.name}
               </h2>
             </div>
-            <div className="flex gap-[5px] items-center">
+            <div className="flex gap-[5px] items-center cursor-pointer">
               <h2 className="font-secondary text-tx_primary">{likeCount}</h2>
               <AiFillLike color={like  ? "red" : "white"} size={25} onClick={handleToggleLike} />
             </div>
@@ -137,10 +137,10 @@ const Post = () => {
         </div>
 
         <div className="mx-[20px] mt-[40px]">
-          <h2 className="text-heading_1 text-tx_primary font-secondary font-bold mb-[10px]">
+          <h2 className="text-heading_2 md:text-heading_1 text-tx_primary font-secondary font-bold mb-[10px]">
             Related Posts
           </h2>
-          <section className="container mx-auto grid grid-cols-1 gap-4 w-[400px]">
+          <section className="container mx-auto grid grid-cols-1 gap-4 w-[300px] md:w-[400px]">
             <RelatedPostCard title="Title 1" author="Author 1" />
             <RelatedPostCard title="Title 2" author="Author 2" />
             <RelatedPostCard title="Title 3" author="Author 3" />
@@ -160,7 +160,7 @@ const RelatedPostCard = ({ title, author }) => (
       <img
         src={logo}
         alt="blog_app_logo"
-        className="w-full object-cover w-[400px] h-[180px]"
+        className="object-cover w-[300px] h-[80px] md:w-[400px] md:h-[180px]"
         style={{
           borderTopLeftRadius: "10px",
           borderBottomLeftRadius: "0px",

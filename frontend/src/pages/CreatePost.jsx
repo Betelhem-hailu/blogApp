@@ -39,7 +39,7 @@ function CreatePost() {
 
   const dispatch = useDispatch();
   const navigate = useNavigate();
-  const { data } = useSelector((state) => state.post);
+  const { tags } = useSelector((state) => state.post);
 
 
 
@@ -126,21 +126,21 @@ function CreatePost() {
 
   return (
     <div className="bg-bg_primary min-h-[100vh] h-full">
-      <header className="bg-five-color-gradient text-tx_primary h-[70px] shadow-header_shadow">
-        <div className="flex justify-between items-center px-[90px] py-[10px]">
+      <header className="bg-five-color-gradient text-tx_primary h-full md:h-[70px] shadow-header_shadow">
+        <div className="flex justify-between md:items-center flex-col md:flex-row gap-4 px-[30px] md:px-[90px] py-[10px]">
           <div className="flex gap-[15px] items-center">
             <Link to={"/"}>
               <img
                 src={logo}
                 alt="blog_app_logo"
-                className="w-[50px] h-[50px] object-fit rounded-full"
+                className="w-[30px] h-[30px] md:w-[50px] md:h-[50px] object-fit rounded-full"
               />
             </Link>
             <h1 className="text-2xl font-semibold">Add Post</h1>
           </div>
         </div>
       </header>
-      <div className="w-full max-w-4xl px-6 py-8 mx-auto">
+      <div className="w-full md:max-w-4xl px-2 md:px-6 py-8 mx-auto">
         <div className="flex justify-end items-center mb-6">
           <div className="space-x-4">
             <button
@@ -160,7 +160,7 @@ function CreatePost() {
           </div>
         </div>
         <form className="space-y-2">
-          <div className="mb-4 w-[700px]">
+          <div className="mb-4 w-full md:w-[700px]">
             <input
               type="text"
               placeholder="Title of the blog"
@@ -172,7 +172,7 @@ function CreatePost() {
               <span className="text-tx_error">{errors.title.message}</span>
             )}
           </div>
-          <div className="relative w-[700px]">
+          <div className="relative w-full md:w-[700px]">
             <div
               onClick={() => setIsOpen(!isOpen)}
               className="z-99 p-2 cursor-pointer flex justify-between items-center bg-[#00000066] border border-[0.5px] border-br_primary rounded-[10px] 
@@ -221,7 +221,7 @@ function CreatePost() {
                     </button>
                   </div>
                 </div>
-                {data.map((option) => (
+                {tags && tags.map((option) => (
                   <div
                     key={option._id}
                     className="flex items-center px-4 py-2 hover:bg-gray-100 cursor-pointer"
@@ -243,7 +243,7 @@ function CreatePost() {
             )}
           </div>
 
-          <div className="mb-4 w-[700px]">
+          <div className="mb-4 w-full md:w-[700px]">
             <textarea
               placeholder="Type anything..."
               className="w-full custom-height p-4 px-4 py-[5px] bg-[#00000066] border border-[0.5px] border-br_primary rounded-[10px] text-white w-[300px] h-[50px] focus:outline-none focus:ring-2 focus:ring-blue-400"
@@ -255,7 +255,7 @@ function CreatePost() {
             )}
           </div>
 
-          <div className="mb-4 w-[700px]">
+          <div className="mb-4 w-full md:w-[700px]">
           {existingCoverImage && (
               <img src={existingCoverImage} alt="Cover" className="mb-2 h-20" />
             )}
@@ -277,7 +277,7 @@ function CreatePost() {
             )}
           </div>
 
-          <div className="mb-4 w-[700px]">
+          <div className="mb-4 w-full md:w-[700px]">
             <label className="block text-sm font-semibold mb-2 text-tx_primary">
               Gallery Images (Select multiple)
             </label>
@@ -308,20 +308,6 @@ function CreatePost() {
             )}
           </div>
 
-          {/* <button
-            value="draft"
-            onClick={handleSubmit(handleButtonClick("draft"))}
-            className="bg-white text-gray-900 px-4 py-2 rounded-md font-semibold"
-          >
-            Save
-          </button>
-          <button
-            value="post"
-            onClick={handleSubmit(handleButtonClick("post"))}
-            className="bg-white text-gray-900 px-4 py-2 rounded-md font-semibold"
-          >
-            Post
-          </button> */}
         </form>
       </div>
     </div>

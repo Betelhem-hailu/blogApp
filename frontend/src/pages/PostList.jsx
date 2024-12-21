@@ -3,27 +3,34 @@ import { Link, useNavigate } from "react-router-dom";
 import { logo } from "../assets";
 import { RiSearchLine } from "react-icons/ri";
 import { useDispatch, useSelector } from "react-redux";
-import { useEffect } from "react";
-import { deletePost, getPostsbyuserId } from "../slices/post.slice";
+import { useEffect, useState } from "react";
+import { deletePost, getPostsbyuserId, getTags } from "../slices/post.slice";
 
 const PostList = () => {
   const dispatch = useDispatch();
-  const { data } = useSelector((state) => state.post);
+  const [search, setSearch] = useState("");
+  const [tag, setTag] = useState("");
+  const { data, tags } = useSelector((state) => state.post);
+
+  console.log(search);
+  useEffect(() => {
+    dispatch(getTags());
+  }, [dispatch]);
 
   useEffect(() => {
-    dispatch(getPostsbyuserId());
-  }, [dispatch]);
+    dispatch(getPostsbyuserId({search, tag}));
+  }, [dispatch, search, tag]);
 
   return (
     <div className="bg-bg_primary min-h-[100vh] h-full">
-      <header className="bg-five-color-gradient text-tx_primary h-[70px] shadow-header_shadow">
-        <div className="flex justify-between items-center px-[90px] py-[10px]">
+      <header className="bg-five-color-gradient text-tx_primary h-full md:h-[70px] shadow-header_shadow">
+        <div className="flex justify-between md:items-center flex-col md:flex-row gap-4 px-[30px] md:px-[90px] py-[10px]">
           <div className="flex gap-[15px] items-center">
             <Link to={"/"}>
               <img
                 src={logo}
                 alt="blog_app_logo"
-                className="w-[50px] h-[50px] object-fit rounded-full"
+                className="w-[30px] h-[30px] md:w-[50px] md:h-[50px] object-fit rounded-full"
               />
             </Link>
             <h1 className="text-2xl font-semibold">POSTS</h1>
@@ -31,9 +38,11 @@ const PostList = () => {
           <div className="flex items-center gap-4">
             <div className="relative">
               <input
+                value={search}
+                onChange={(e) => setSearch(e.target.value)}
                 type="text"
                 placeholder="Search..."
-                className="pl-[80px] px-4 py-[5px] bg-[#00000066] border border-[0.5px] border-br_primary rounded-[100px] text-white w-[300px] h-[40px] focus:outline-none focus:ring-2 focus:ring-blue-400"
+                className="pl-[40px] md:pl-[80px] px-4 py-[5px] bg-[#00000066] border border-[0.5px] border-br_primary rounded-[100px] text-white w-full md:w-[300px] h-[40px] focus:outline-none focus:ring-2 focus:ring-blue-400"
               />
               <RiSearchLine
                 color="#59ACFF"
@@ -42,31 +51,38 @@ const PostList = () => {
                 className="absolute top-[10%] left-[10px]"
               />
             </div>
-            <select className="p-2 border border-[0.5px] border-br_primary rounded-[15px] bg-[#00000066] text-white w-[100px] h-[40px] focus:outline-none focus:ring-2 focus:ring-blue-400">
+            <select
+              onChange={(e) => setTag(e.target.value)}
+              className="px-4 py-2 bg-bg_secondary text-white rounded border border-br_primary rounded-[15px] transition duration-300 focus:outline-none focus:ring-2 focus:ring-blue-400"
+            >
               <option
-                value="all"
-                className="border border-[0.5px] border-br_primary rounded-[15px] bg-[#00000066] text-white"
+                value=""
+                className="px-4 py-2 text-white rounded border border-br_primary hover:bg-glow focus:outline-none focus:ring-2 focus:ring-blue-400"
               >
                 ALL
               </option>
-              <option
-                value="category1"
-                className="border border-[0.5px] border-br_primary rounded-[15px] bg-[#00000066] text-white"
-              >
-                Category 1
-              </option>
+              {tags &&
+                tags.map((tag, index) => (
+                  <option
+                    key={index}
+                    value={tag.name}
+                    className="px-4 py-2 hover:bg-bg_additional cursor-pointer text-white rounded border border-br_primary  focus:outline-none focus:ring-2 focus:ring-blue-400"
+                  >
+                    {tag.name}
+                  </option>
+                ))}
             </select>
           </div>
         </div>
       </header>
-      <div className="px-[90px] pt-[40px]">
+      <div className="px-[30px] md:px-[90px] pt-[40px]">
         <Link to={"/createpost"}>
           <button className="bg-white text-gray-900 py-2 px-4 rounded-lg">
             Add +
           </button>
         </Link>
 
-        <div className="mt-6 grid grid-cols-3 gap-[20px]">
+        <div className="mt-6 grid grid-cols-1 md:grid-cols-3 gap-[20px]">
           {data &&
             data.map((post) => (
               <PostCard
@@ -104,8 +120,8 @@ const PostCard = ({ id, title, content, coverImage, galleryImages, date }) => {
   const handleDelete = () => {
     console.log("Delete Post with id: ", id);
     dispatch(deletePost(id))
-    .unwrap()
-    .then(() => {});
+      .unwrap()
+      .then(() => {});
   };
 
   return (

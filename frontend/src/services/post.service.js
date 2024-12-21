@@ -52,9 +52,14 @@ const getTags = async () => {
 };
 
 //getPostsbyuserId
-const getPostsbyUser = async () => {
+const getPostsbyUser = async ({ search = "", tag = "" }) => {
   return axios
-    .get(API + "/getPostsbyuserId")
+    .get(API + "/getPostsbyuserId", {
+      params: {
+        search: search || "",
+        tag: tag || "",  
+      },
+    })
     .then((response) => {
       return response.data;
     })

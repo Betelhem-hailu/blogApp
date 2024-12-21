@@ -58,9 +58,9 @@ export const getPopularPosts = createAsyncThunk(
 //getPostsbyuserId
 export const getPostsbyuserId = createAsyncThunk(
   "post/getPostsbyuserId",
-  async (_, { rejectWithValue }) => {
+  async ( {search, tag}, { rejectWithValue }) => {
     try {
-      const response = await postService.getPostsbyUser();
+      const response = await postService.getPostsbyUser({search, tag});
       return response;
     } catch (error) {
       return rejectWithValue(error.response?.data?.message || error.message);

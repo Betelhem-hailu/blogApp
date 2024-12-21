@@ -3,8 +3,8 @@ import { logo } from "../assets";
 const Footer = () => {
   return (
     <footer>
-      <div id="contact" className="container mx-auto px-[90px] py-[10px] grid grid-cols-1 md:grid-cols-3 gap-4 text-tx_primary">
-      <img src={logo} alt="blog_app_logo" className="w-[100px] h-[100px] object-fit rounded-full" />
+      <div id="contact" className="container mx-auto px-[30px] md:px-[90px] py-[10px] grid grid-cols-3 md:grid-cols-3 gap-4 text-tx_primary">
+      <img src={logo} alt="blog_app_logo" className="w-[50px] md:w-[100px] h-[50px] md:h-[100px] object-fit rounded-full" />
         <div>
           <h3 className="text-base mb-2">Useful Links</h3>
           <ul>
@@ -20,7 +20,7 @@ const Footer = () => {
           </ul>
         </div>
       </div>
-      <div className="bg-bg_tertiary px-[90px] text-tx_primary">
+      <div className="bg-bg_tertiary px-[30px] md:px-[90px] text-tx_primary">
           <p>&copy; All rights reserved</p>
         </div>
     </footer>

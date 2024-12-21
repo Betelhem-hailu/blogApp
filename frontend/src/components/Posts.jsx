@@ -5,7 +5,7 @@ import moment from "moment";
 
 const Posts = ({data}) => {
   return (
-    <section className="container mx-auto grid grid-cols-1 md:grid-cols-3 gap-4 px-[90px] py-[40px]">
+    <section className="container mx-auto grid grid-cols-1 md:grid-cols-3 gap-4 px-[30px] md:px-[90px] py-[40px]">
       {data &&
             data.map((post, index) => (
               <Link key={index} to={`/post`} state={{ postId: post._id }}>

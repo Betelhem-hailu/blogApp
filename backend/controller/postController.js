@@ -181,19 +181,51 @@ const getPopularPosts = async (req, res) => {
 
 //Get Post by loggedin user
 const getPostByUser = async (req, res) => {
+  const { search, tag } = req.query;
   try {
     const userId = req.user.userId;
-    const posts = await Post.find({ user: userId });
-    if (!posts) {
-      return res
+    const query = { user: userId };
+    if (tag) {
+      const tagDoc = await Tag.findOne({ name: tag });
+      if (!tagDoc) {
+        return res.status(404).json({ code: "NO_TAG", message: "Tag not found" });
+      }
+      query.tags = tagDoc._id; // Use the tag's ObjectId
+    }
+
+    if (search) {
+      query.title = { $regex: search, $options: "i" }; // Case-insensitive search
+    }
+
+    const posts = await Post.find(query)
+    .populate("tags", "name")
+      .populate("user", "name profilePicture");
+      if (!posts) {
+        return res
         .status(404)
         .json({ code: "NO_POST", message: "No posts found" });
-    } else {
-      res.json(posts);
-    }
-  } catch (err) {
-    res.status(500).json({ message: err.message });
-  }
+        } else{
+          const likeCounts = await Promise.all(
+            posts.map((post) =>
+              Action.countDocuments({
+                actionType: "like", // Only count "like" actions
+                post: post._id,
+              })
+            )
+          );
+      
+          // Attach the like information to the post object
+          const postsWithLikes = posts.map((post, index) => ({
+            ...post.toObject(), 
+            likeCount: likeCounts[index],
+          }));
+      
+          res.json(postsWithLikes);   
+        }
+      } catch (err) {
+          res.status(500).json({ message: err.message
+        });
+        }
 };
 
 //Get tags
